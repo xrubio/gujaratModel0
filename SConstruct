@@ -7,13 +7,14 @@ namespaceAgents = ['Gujarat']
 srcFiles = Split('main.cxx GujaratWorld.cxx GujaratConfig.cxx Climate.cxx GujaratAgent.cxx HunterGatherer.cxx MDPAction.cxx MoveHomeAction.cxx Sector.cxx ForageAction.cxx SettlementAreas.cxx HunterGathererMDPConfig.cxx HunterGathererMDPState.cxx HunterGathererMDPModel.cxx DoNothingAction.cxx AgentController.cxx HunterGathererProgrammedController.cxx HunterGathererDecisionTreeController.cxx HunterGathererMDPController.cxx GujaratDemographics.cxx OriginalDemographics.cxx CaloricRequirementsTable.cxx GujaratState.cxx HGMind.cxx HGOmniMindMap.cxx HGPartialMindMap.cxx HGMindFactory.cxx ')
 #HunterGathererRandomMDPPolicyController.cxx')
 
+pandoraPath = ARGUMENTS.get('pandora', '../../pandora/pandora')
 
 # APFiles = Split('APMoveHomeAction.cxx EstablishPlotAction.cxx SowAction.cxx HarvestAction.cxx MaintainPlotAction.cxx CultivatedField.cxx AgroPastoralist.cxx') 
 
 import os, sys
 from subprocess import call
 
-sys.path.append('../../scripts/')
+sys.path.append(pandoraPath+'/scripts/')
 import generateMpi 
 
 release = ARGUMENTS.get('release', 1)
@@ -103,7 +104,7 @@ env['CCFLAGS'] += [reduccFlag]
 
 env['CCFLAGS'] += [heurFlag]
 
-includeDirs = Split('./ ../../ ../../../libs/libmdp/')
+includeDirs = Split('./ '+pandoraPath+' '+pandoraPath+'/../libs/libmdp/')
 
 if int(mareNostrum)==1:		
 	includeDirs += ['/apps/HDF5/1.8.10-mpi/OPENMPI/include']
@@ -117,7 +118,7 @@ if int(mareNostrum)==1:
 	libDirs += ['/apps/GRASS/6.4.3RC2/grass-6.4.3RC2/lib/']
 else:
 	includeDirs += ['/usr/lib/grass64/include/','/usr/include/gdal/']
-	libDirs = ['../../', '/usr/lib/grass64/lib/']
+	libDirs = [pandoraPath, '/usr/lib/grass64/lib/']
 
 	if int(useMpi)==1:
 		includeDirs += ['/usr/local/hdf5/include']
