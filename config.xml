@@ -48,7 +48,8 @@
 		forageTimeCost="0.5"
 		demographicsModel="original"
 		hunterGathererInformationCaducityTime="7"
-		controllerType="RandomMDP" 
+		controllerType="RandomMDP"
+		alphaDecTree="0.5" 
 		mindType="omniscient"
 		shareInfo="no">
 		<!-- mindType:{omniscient,partial}-->
