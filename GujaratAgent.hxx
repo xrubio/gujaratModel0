@@ -37,7 +37,7 @@ protected:
 	int _availableTime; // MpiBasicAttribute
 	int _spentTime; // MpiBasicAttribute
 	int _collectedResources; // MpiBasicAttribute
-
+	int _resourcePrediction; // MpiBasicAttribute
 	// age of the agent in num steps (years*3)
 	int _age; // MpiBasicAttribute
 
@@ -58,6 +58,8 @@ protected:
 	//float _reproductionProbability;
 
 	float _starved; // MpiBasicAttribute
+	
+	int _lastMoveCrono; // MpiBasicAttribute
 	
 	Engine::Point2D<int> getNearLocation( int range );
 	int _forageActionsExecuted;
@@ -180,6 +182,12 @@ public:
 
 		return 4;		
 	}	
+	
+	void setResourcePrediction(float x) { _resourcePrediction = x;}
+	float getResourcePrediction() const { return _resourcePrediction;}	
+	
+	int getLastMoveCrono() { return _lastMoveCrono; }
+	void setLastMoveCrono(int s) { _lastMoveCrono = s; }
 };
 
 } // namespace Gujarat

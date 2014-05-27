@@ -1,6 +1,7 @@
 
 #include <HunterGathererDecisionTreeController.hxx>
 
+#include <vector>
 #include <iostream>
 
 #include <MoveHomeAction.hxx>
@@ -129,6 +130,8 @@ MDPAction* HunterGathererDecisionTreeController::shouldForageWithWalkEstimation(
 	}	
 	meanReward = agent.convertBiomassToCalories( sum/(float)i );	
 	
+	agent.setResourcePrediction(meanReward);
+	
 	float alpha = ((GujaratConfig)((GujaratWorld*)agent.getWorld())->getConfig()).getAlphaDecTree();
 	if(  alpha*meanReward >= agent.computeConsumedResources(1) )
 	{
@@ -161,6 +164,7 @@ MDPAction* HunterGathererDecisionTreeController::shouldForage( HunterGatherer & 
 	int biomass = agent.getLRSectors()[maxSectorLRIdx]->getBiomassAmount();
 
 	// thinking that the agent will forage at most 9 cells
+	int numCells = agent.getHRSectors()[maxSectorIdx]->numCells();
 
 #ifndef TREEIDUN
 	int numCells = agent.getHRSectors()[maxSectorHRIdx]->numCells();
@@ -186,7 +190,8 @@ MDPAction* HunterGathererDecisionTreeController::shouldForage( HunterGatherer & 
 	// we check if, collecting 50% of real biomass, needs will be arrived.
 	// ISSUE : the condition say : everybody eats or I do not go out to forage
 	// You should go and forage something, at least for the couple.
-	
+	agent.setResourcePrediction(percentageOfCells*(agent.convertBiomassToCalories(biomass)) );
+
 	float alpha = ((GujaratConfig)((GujaratWorld*)agent.getWorld())->getConfig()).getAlphaDecTree();
 	if( alpha*percentageOfCells*(agent.convertBiomassToCalories(biomass)) >= agent.computeConsumedResources(1) )
 	{

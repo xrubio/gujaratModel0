@@ -15,9 +15,15 @@ namespace Gujarat
 {
 
 GujaratAgent::GujaratAgent( const std::string & id ) 
-	: Engine::Agent(id), 
-	 _spentTime(0), _collectedResources(0), _age(0),
-	_socialRange( 50 ), _starved( 0.0f ), _forageActionsExecuted(0), _moveHomeActionsExecuted(0)
+	: Engine::Agent(id)
+	, _spentTime(0)
+	, _collectedResources(0)
+	, _age(0)
+	, _socialRange( 50 )
+	, _starved( 0.0f )
+	, _forageActionsExecuted(0)
+	, _moveHomeActionsExecuted(0)
+	, _lastMoveCrono(-1)
 {
 	//_emigrationProbability = 0.0;
 	//_reproductionProbability = 0.0;
