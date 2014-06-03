@@ -39,6 +39,7 @@ HunterGathererMDPState::HunterGathererMDPState( const HunterGathererMDPState& s 
 , _agentRef(s._agentRef)
 ,_config(s._config)
 ,_numAvailableActionsWhenBorn(s._availableActions.size())
+,_crono(s._crono)
 //,_availableActions(s._availableActions)
 {
 	std::stringstream logName;
@@ -118,6 +119,7 @@ HunterGathererMDPState::HunterGathererMDPState( const HunterGathererMDPState& s
 , _config(s._config)
 , _availableActions(actionList)
 , _numAvailableActionsWhenBorn(actionList.size())
+,_crono(s._crono)
 {
 	std::stringstream logName;
 	logName << "logMDPStates_"	<< _agentRef->getWorld()->getId() << "_" << _agentRef->getId();
@@ -193,6 +195,7 @@ HunterGathererMDPState::HunterGathererMDPState(
 	,_config(config)
 	,_availableActions(actionList)
 	,_numAvailableActionsWhenBorn(actionList.size())
+	,_crono(0)
 {
 	std::stringstream logName;
 	logName << "logMDPStates_"	<< _agentRef->getWorld()->getId() << "_" << _agentRef->getId();
@@ -260,7 +263,8 @@ const HunterGathererMDPState& HunterGathererMDPState::operator=( const HunterGat
 
 	_info=4;
 	
-	_timeIndex 		 = s._timeIndex;
+	_timeIndex 	 = s._timeIndex;
+	_crono 		= s._crono;
 	_mapLocation 	 = s._mapLocation;
 	_onHandResources = s._onHandResources;
 	_resources 		 = s._resources;

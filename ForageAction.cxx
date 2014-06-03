@@ -950,9 +950,6 @@ void	ForageAction::doTrendVicinityWalkForRewardEstimation( GujaratAgent& agent, 
 		//w++;
 	}
 	
-	//std::cout << "res " << collected << " loops " << loops << " wd " << walkedDist << " dH " << distHome << " mD " << maxDist << " foraging dist: " << agent.getTimeSpentForagingTile() << " fm " << agent.getPopulationSize() << std::endl;
-	//std::cout << "LOOP " << collected << "," << loops << "," << walkedDist << "," << distHome << "," << maxDist << std::endl;
-	
 	// update l'LRraster??? and LRsectors???
 	// One action per timestep -> Next time I need LRraster and LRsectors they will be updated by
 	// nextstep method in world -> do not update LRraster, LRsectors
@@ -1048,7 +1045,6 @@ void	ForageAction::doTrendVicinityWalk( GujaratAgent& agent, const Engine::Point
 	// One action per timestep -> Next time I need LRraster and LRsectors they will be updated by
 	// nextstep method in world -> do not update LRraster, LRsectors
 }
-
 
 
 void	ForageAction::doVicinityWalk( GujaratAgent& agent, const Engine::Point2D<int>& n0, double maxDist, Engine::Raster& r, int & collected ) 

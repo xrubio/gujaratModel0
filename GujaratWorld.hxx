@@ -99,13 +99,16 @@ class GujaratWorld : public Engine::World
 	//void updateMoisture();
 	void updateSoilCondition();
 	void updateResources();
-	void updateResourcesFOO();
+	
 	void updateResourcesLowResMap();
 	void recomputeYearlyBiomass();
 	void recomputeLowResYearlyBiomass();
 	
 	//Engine::Point2D<int> findNearestWater( const Engine::Point2D<int> & point );
-	float getBiomassVariation( bool wetSeason, Soils & cellSoil, const Engine::Point2D<int> & index ) const;
+	float getBiomassVariation( bool wetSeason, Soils & cellSoil, const Engine::Point2D<int> & index ) const;	
+	
+	float getBiomassVariationLR( bool wetSeason, Soils cellSoil, const Engine::Point2D<int> & index, long numInterDune ) const;
+	
 public:
 	GujaratWorld( Engine::Simulation & simulation, const GujaratConfig & config );
 	virtual ~GujaratWorld();
@@ -168,6 +171,8 @@ public:
 	}
 	
 	void getHRFreeCell(const Engine::Point2D<int> LRpos, Engine::Point2D<int> & HRpos);
+
+	void updateResourcesLR(Engine::Raster & resRast, int timeStep);
 	
 	
 //*****************************************************************

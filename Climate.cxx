@@ -55,10 +55,19 @@ bool Climate::rainSeasonStarted() const
 	return cellUpdateRequired() && _currentSeason == HOTWET;
 }
 
+/*
 void Climate::advanceSeason()
 {
 	_currentSeason = (Seasons)((_theWorld.getCurrentStep() / _config._daysPerSeason) % 3);
 }
+*/
+
+void Climate::advanceSeason()
+{
+	_currentSeason = (Seasons)getSeason(_theWorld.getCurrentStep());
+}
+
+
 
 float Climate::getMeanAnnualRain() const
 {
@@ -74,6 +83,13 @@ const Seasons & Climate::getSeason() const
 {
 	return _currentSeason;
 }
+
+Seasons Climate::getSeason(int timeStep) const
+{
+	return (Seasons)((_theWorld.getCurrentStep() / _config._daysPerSeason) % 3);	
+}
+
+
 
 } // namespace Gujarat
 

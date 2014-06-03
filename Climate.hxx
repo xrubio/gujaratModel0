@@ -44,6 +44,7 @@ public:
 	float getMeanAnnualRain() const;
 	const float & getRain() const;
 	const Seasons & getSeason() const;
+	Seasons getSeason(int timeStep) const;
 
 	void advanceSeason();
 	bool cellUpdateRequired() const;

@@ -102,7 +102,7 @@ void GujaratWorld::createRasters()
 	registerStaticRaster("soils", _config.isStorageRequired("soils"), eSoils);
 	//registerDynamicRaster("soils", _config.isStorageRequired("soils"), eSoils);
 	Engine::GeneralState::rasterLoader().fillGDALRaster(getStaticRaster(eSoils), _config._soilFile, this);	
-
+	
 	//duneizeMap(eSoils, _config._homeRange);
 	
 	
@@ -658,27 +658,29 @@ void GujaratWorld::updateSoilCondition()
 }
 
 
-//void GujaratWorld::updateResourcesFOO()
-//{
+void GujaratWorld::updateResourcesLR(Engine::Raster & resRast, int timeStep)
+{	
+	//unsigned long sumRes = 0;
 	
-	/*
-	if(vFOO.size()==0)
-		{
-			vFOO.resize(_boundaries._size._x * _boundaries._size._y);
-		}
-
-	for(int i = 0; i < _boundaries._size._x * _boundaries._size._y; i++)
+	Seasons season = _climate.getSeason(timeStep);
+	bool wetSeason = season==HOTWET;
+	Engine::Point2D<int> rastSize = resRast.getSize();
+	Engine::Point2D<int> index;
+	for( index._x=0; index._x<rastSize._x; index._x++ )		
 	{
-		vFOO[i]=2000;
+		for( index._y=0; index._y<rastSize._y; index._y++ )
+		{
+			// 3. Increment or Decrement cell biomass depending on yearly biomass			
+			long r  = resRast.getValue(index);
+			long id = getValueLR(LRCounterSoilINTERDUNE,index);
+			r  = std::max(0.0f, r + getBiomassVariationLR(wetSeason, INTERDUNE, index, id));
+			resRast.setValue(index, r);	
+			
+		}
 	}
-	*/
 	
-//	for(int i = 0; i < _boundaries._size._x * _boundaries._size._y; i++)
-//	{
-//		_vFOO[i]=2000;
-//	}
-	
-//}
+}
+
 
 void GujaratWorld::updateResources()
 {
@@ -727,7 +729,7 @@ void GujaratWorld::updateResources()
 
 void GujaratWorld::recomputeYearlyBiomass()
 {
-
+	
 	// update all the map resources to the minimum of the year (in case it was diminished by agents)
 	Engine::Point2D<int> index;
 	for( index._x=_boundaries._origin._x; index._x<_boundaries._origin._x+_boundaries._size._x; index._x++ )                
@@ -743,6 +745,7 @@ void GujaratWorld::recomputeYearlyBiomass()
 	logName << "World_" << _simulation.getId();
 	// 1. Compute factor between actual rain and average rain		
 	float raininessFactor = _climate.getRain() / _climate.getMeanAnnualRain();
+	
 	
 	// each cell is 31.5m * 31.5m
 	double areaOfCell = _config._cellResolution * _config._cellResolution;
@@ -852,8 +855,59 @@ long int GujaratWorld::getNewKey()
 	return _agentKey++;
 }
 
+float GujaratWorld::getBiomassVariationLR( bool wetSeason, Soils cellSoil, const Engine::Point2D<int> & index, long numInterDune ) const
+{
+	double variation = 0.0f;
+	if(_config._biomassDistribution.compare("standard")==0)
+	{
+		if(wetSeason)
+		{
+			variation = _dailyRainSeasonBiomassIncrease.at(cellSoil);
+		}
+		else
+		{
+			variation = -_dailyDrySeasonBiomassDecrease.at(cellSoil);
+		}
+	}
+	else if(_config._biomassDistribution.compare("linDecayFromWater")==0 || _config._biomassDistribution.compare("logDecayFromWater")==0)
+	{
+		/*
+		 This simplification is introducing some error.
+		 Raster eLRWeightWater stores the mean of weightWater values in the area
+		 of the LR cell. As you approach to water the weight factor increases and 
+		 also the probability an HR cell is of type INTERDUNE. So the assigned weights 
+		 to INTERDUNE cells, probably, are greater than the mean. 
+		 */
+		variation = _config._waterDistConstant*getValue(eLRWeightWater, index);
+		//variation = 1600.0f*1600.0f*float(getValue("weightWater", index))/16423239174.0f;
+		if(wetSeason)
+		{
+			variation *= (float)_dailyRainSeasonBiomassIncrease.at(cellSoil);			
+		}
+		else
+		{
+			variation *= -1.0f*(float)_dailyDrySeasonBiomassDecrease.at(cellSoil);
+		}
+		//std::cout << "variation: " << variation << " constant: " << _config._waterDistConstant << " weight: " << getValue("weightWater", index) << " increase: " <<_dailyRainSeasonBiomassIncrease.at(cellSoil) << " dist to water: " << getValue("distWater", index) << std::endl;
+		//variation /= 100.0f;
+	}
+	else
+	{
+		std::stringstream oss;
+		oss << "GujaratWorld::getBiomassVariation - unknown biomass distribution: " << _config._biomassDistribution;
+		throw Engine::Exception(oss.str());
+	}
+	
+	return variation*numInterDune;
+}
+
+
+
 float GujaratWorld::getBiomassVariation( bool wetSeason, Soils & cellSoil, const Engine::Point2D<int> & index ) const
 {
+	//*? TODO : try to avoid season comparison and _config._biomassDistribution comparison... we are doing
+	// these many thousand times each timestep : 1 for each HR cell
+	
 	double variation = 0.0f;
 	if(_config._biomassDistribution.compare("standard")==0)
 	{

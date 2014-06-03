@@ -245,10 +245,13 @@ public:
 	
 	void deRegisterFromCounterMapAndDeleteKnowledgeStructures();
 	
-
+	long getCrono() const { return _crono; }
+	void setCrono(long c) { _crono = c; }
+	
 		
 private:
 	unsigned		_timeIndex;
+	long			_crono;
 	Engine::Point2D<int>	_mapLocation;
 	int			_onHandResources;
 	

@@ -75,13 +75,7 @@ public:
 	virtual float cost( const HunterGathererMDPState &s, Problem::action_t a ) const;
 	virtual void next( const HunterGathererMDPState &s
 			, Problem::action_t a
-			, OutcomeVector& outcomes ) const;
-	
-	virtual void next( const HunterGathererMDPState &s
-			, Problem::action_t a
-			, OutcomeVector& outcomes
-			 , int foo ) const;
-			
+			, OutcomeVector& outcomes ) const;		
 			
 	virtual	void print( std::ostream& os ) const {}
 	

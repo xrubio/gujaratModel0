@@ -109,6 +109,7 @@ void	HunterGathererMDPModel::reset( GujaratAgent & agent )
 						, mapLock
 						, actionList);
 	
+	_initial->setCrono(_simAgent->getWorld()->getCurrentTimeStep());
 	_initial->computeHash();
 	
 	//*?
@@ -148,68 +149,6 @@ float HunterGathererMDPModel::cost( const HunterGathererMDPState& s,
 }
 
 
-
-void HunterGathererMDPModel::next( 	const HunterGathererMDPState &s, 
-					action_t a, 
-					OutcomeVector& outcomes,int foo ) const
-{
-
-	std::stringstream logName;
-	logName << "infoshar";
-	
-	
-	const MDPAction* act = s.availableActions(a);
-	/*
-	 * Here, where I know whether "act" is ForageAction or MoveHomeAction,
-	 * according to these, what I pass to sp depends on it... copies,refs,
-	 * or new adhoc creation... etc...
-	 */
-	
-	std::vector<bool> ownership(4);
-	//TODO An action should know nothing about ownerships. Refactor the thing.
-	
-	std::vector< Sector* > * HRActionSectors;
-	std::vector< Sector* > * LRActionSectors;
-	std::vector< Engine::Point2D<int> > * HRCellPool;
-	std::vector< Engine::Point2D<int> > * LRCellPool;
-	
-	HRActionSectors = s.getHRActionSectors();
-	LRActionSectors = s.getLRActionSectors();
-	HRCellPool = s.getHRCellPool();
-	LRCellPool = s.getLRCellPool();		
-	
-	ownership[0]=false;	
-	ownership[1]=false;
-	ownership[2]=false;	
-	ownership[3]=false;		
-	
-	std::vector<MDPAction *>  actionList;
-
-	Engine::Point2D<int> center;
-	if(dynamic_cast<const MoveHomeAction*>(act))
-	{
-		center = ((MoveHomeAction*)act)->getNewHomeLoc();
-	}
-	else
-	{
-		center = s.getLocation();
-	}
-	
-	
-	makeActionsForState(s, center,HRActionSectors, LRActionSectors, HRCellPool, LRCellPool, actionList);
-	
-	//s.initializeSuccessor(sp,ownership);
-	HunterGathererMDPState sp(s, center,HRActionSectors, LRActionSectors, HRCellPool, LRCellPool, ownership, actionList);
-	
-	act->executeMDP( agentRef(), s, sp );
-	applyFrameEffects( s, sp );
-	sp.computeHash();	
-	
-	outcomes.push_back( std::make_pair(sp, 1.0) ); //*? TODO why 1.0, justify it
-	
-}
-
-
 void HunterGathererMDPModel::next( 	const HunterGathererMDPState &s, 
 					action_t a, 
 					OutcomeVector& outcomes
@@ -226,7 +165,7 @@ void HunterGathererMDPModel::next( 	const HunterGathererMDPState &s,
 	 * or new adhoc creation... etc...
 	 */
 	
-	Engine::Point2D<int> center(s.getLocation());	
+	Engine::Point2D<int> center;	
 	
 	std::vector<bool> ownership(4);
 	//TODO An action should know nothing about ownerships. Refactor the thing.
@@ -265,7 +204,7 @@ void HunterGathererMDPModel::next( 	const HunterGathererMDPState &s,
 		ownership[2]=false;	
 		ownership[3]=true;	
 		
-
+		center = s.getLocation();
 	}
 	/*
 	else if(dynamic_cast<const ForageAction*>(act))
@@ -306,6 +245,7 @@ void HunterGathererMDPModel::next( 	const HunterGathererMDPState &s,
 		ownership[2]=false;
 		ownership[3]=s.getOwnerShip()[3];
 		
+		center = s.getLocation();
 	}
 	else
 	{
@@ -325,6 +265,11 @@ void HunterGathererMDPModel::next( 	const HunterGathererMDPState &s,
 	makeActionsForState(s, center, HRActionSectors, LRActionSectors, HRCellPool, LRCellPool, actionList);
 	
 	HunterGathererMDPState sp(s, center, HRActionSectors, LRActionSectors, HRCellPool, LRCellPool, ownership, actionList);
+	
+	sp.setCrono(s.getCrono()+1);	
+
+	//*? applying biomass dynamics
+	((GujaratWorld*)_simAgent->getWorld())->updateResourcesLR(sp.getResourcesRaster(), sp.getCrono());	
 	
 	/*
 	std::cout << "NET: edge "		
