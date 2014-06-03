@@ -40,7 +40,7 @@ walkProgramTable={
 ,'tv' : 'gujarat_tv'
 }
 
-treeHeurEstim = ARGUMENTS.get('treeHeur','')
+treeHeurEstim = ARGUMENTS.get('treeHeur','walkEstim')
 treeHeurFlagsTable = {
 'walkEstim' : 'WALKESTIM'
 ,'treeIdun' : 'TREEIDUN'
