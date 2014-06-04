@@ -24,7 +24,7 @@ HunterGathererMDPState::HunterGathererMDPState( const HunterGathererMDPState& s 
 : _timeIndex( s._timeIndex )
 , _mapLocation( s._mapLocation )
 , _onHandResources( s._onHandResources )
-, _resources( s._resources )
+, _resources( s._resources, s._resources.getInterDuneCounterRaster()  )
 , _hashKey( s._hashKey )
 , _maxResources( s._maxResources)
 , _resourcesDivider( s._resourcesDivider )
@@ -103,7 +103,7 @@ HunterGathererMDPState::HunterGathererMDPState( const HunterGathererMDPState& s
 : _timeIndex( s._timeIndex )
 , _mapLocation( loc )
 , _onHandResources( s._onHandResources )
-, _resources( s._resources )
+, _resources( s._resources, s._resources.getInterDuneCounterRaster() )
 , _hashKey( s._hashKey )
 , _maxResources( s._maxResources)
 , _resourcesDivider( s._resourcesDivider )
@@ -165,6 +165,7 @@ HunterGathererMDPState::HunterGathererMDPState(
 			, const Engine::Point2D<int> loc
 			, int initResources
 			, Engine::Raster& resourcesRaster
+			, Engine::Raster& interDuneCounterRaster
 			, int maxResources
 			, int divider 
 			, std::vector< Sector* > * HRActionSectors
@@ -179,7 +180,7 @@ HunterGathererMDPState::HunterGathererMDPState(
 	: _timeIndex(0)
 	, _mapLocation( loc )
 	, _onHandResources( initResources )
-	, _resources( resourcesRaster )
+	, _resources( resourcesRaster, interDuneCounterRaster )
 	, _maxResources( maxResources )
 	, _resourcesDivider( divider )
 	, _HRActionSectors( HRActionSectors )
@@ -267,8 +268,8 @@ const HunterGathererMDPState& HunterGathererMDPState::operator=( const HunterGat
 	_crono 		= s._crono;
 	_mapLocation 	 = s._mapLocation;
 	_onHandResources = s._onHandResources;
-	_resources 		 = s._resources;
-	_hashKey 		 = s._hashKey;
+	_resources 	= MDPRaster(s._resources,s._resources.getInterDuneCounterRaster());	
+	_hashKey 	= s._hashKey;
 	_maxResources 	 = s._maxResources;
 	_resourcesDivider = s._resourcesDivider;
 	_daysStarving 	 = s._daysStarving;
@@ -376,7 +377,7 @@ void	HunterGathererMDPState::computeHash()
 	_hashKey.add( _agentRef->reductionResourcesToCategory(_onHandResources) );
 	_hashKey.add( _daysStarving );	
 	
-	for ( Engine::IncrementalRaster::ChangeIterator it = _resources.firstChange();
+	for ( MDPRaster::ChangeIterator it = _resources.firstChange();
 		it != _resources.endOfChanges(); it++ )
 	{
 		const Engine::Point2D<int>& p = it->first;
@@ -399,7 +400,7 @@ void	HunterGathererMDPState::computeHash()
 	_hashKey.add( _onHandResources );
 	_hashKey.add( _daysStarving );
 
-	for ( Engine::IncrementalRaster::ChangeIterator it = _resources.firstChange();
+	for ( MDPRaster::ChangeIterator it = _resources.firstChange();
 		it != _resources.endOfChanges(); it++ )
 	{
 		const Engine::Point2D<int>& p = it->first;
@@ -449,12 +450,12 @@ bool HunterGathererMDPState::EqListMatching(const std::vector<Gujarat::MDPAction
 	return true;	
 }
 
-bool HunterGathererMDPState::equalIncRastersWithReduct(const Engine::IncrementalRaster  & other) const
+bool HunterGathererMDPState::equalIncRastersWithReduct(const MDPRaster  & other) const
 {
-	for ( Engine::IncrementalRaster::ChangeIterator i = _resources.firstChange();
+	for ( MDPRaster::ChangeIterator i = _resources.firstChange();
 		i != _resources.endOfChanges(); i++ )	
 	{
-		Engine::IncrementalRaster::ChangeIterator j = other.getChanges().find( i->first );
+		MDPRaster::ChangeIterator j = other.getChanges().find( i->first );
 		
 		if ( j == other.endOfChanges() ) return false;
 		if ( _agentRef->reductionResourcesToCategory(_agentRef->convertBiomassToCalories(i->second)) 
@@ -668,7 +669,7 @@ void	HunterGathererMDPState::print( std::ostream& os ) const
 	
 	
 	os << "changes=(";
-	for ( Engine::IncrementalRaster::ChangeIterator it = _resources.firstChange();
+	for ( MDPRaster::ChangeIterator it = _resources.firstChange();
 		it != _resources.endOfChanges(); it++ )
 	{
 		const Engine::Point2D<int>& p = it->first;

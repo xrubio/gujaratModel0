@@ -858,7 +858,7 @@ long int GujaratWorld::getNewKey()
 float GujaratWorld::getBiomassVariationLR( bool wetSeason, Soils cellSoil, const Engine::Point2D<int> & index, long numInterDune ) const
 {
 	double variation = 0.0f;
-	if(_config._biomassDistribution.compare("standard")==0)
+	if(true || _config._biomassDistribution.compare("standard")==0)
 	{
 		if(wetSeason)
 		{
@@ -901,7 +901,31 @@ float GujaratWorld::getBiomassVariationLR( bool wetSeason, Soils cellSoil, const
 	return variation*numInterDune;
 }
 
-
+float GujaratWorld::getBiomassVariationInterDune( long timeStep ) const
+{	
+	Seasons season = _climate.getSeason(timeStep);
+	bool wetSeason = false;
+	if(season==HOTWET)
+	{
+		wetSeason = true;
+	}			
+	
+	double variation = 0.0f;
+	if(_config._biomassDistribution.compare("standard")==0)
+	{
+		if(wetSeason)
+		{
+			variation = _dailyRainSeasonBiomassIncrease.at(INTERDUNE);
+		}
+		else
+		{
+			variation = -_dailyDrySeasonBiomassDecrease.at(INTERDUNE);
+		}
+	}	
+	
+	return variation;
+	
+}
 
 float GujaratWorld::getBiomassVariation( bool wetSeason, Soils & cellSoil, const Engine::Point2D<int> & index ) const
 {

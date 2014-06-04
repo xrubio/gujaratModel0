@@ -98,6 +98,7 @@ void	HunterGathererMDPModel::reset( GujaratAgent & agent )
 						, _simAgent->getPosition()
 						, _simAgent->getOnHandResources()
 						, _simAgent->getLRResourcesRaster() //*? incremental?
+						,((GujaratWorld*)_simAgent->getWorld())->getDynamicRaster(LRCounterSoilINTERDUNE)						
 						, _config.getHorizon()
 						, _simAgent->computeConsumedResources(1)
 						, HRActionSectors
@@ -111,6 +112,7 @@ void	HunterGathererMDPModel::reset( GujaratAgent & agent )
 	
 	_initial->setCrono(_simAgent->getWorld()->getCurrentTimeStep());
 	_initial->computeHash();
+	
 	
 	//*?
 	_initial->_creator = -_initial->_creator;
@@ -269,7 +271,13 @@ void HunterGathererMDPModel::next( 	const HunterGathererMDPState &s,
 	sp.setCrono(s.getCrono()+1);	
 
 	//*? applying biomass dynamics
-	((GujaratWorld*)_simAgent->getWorld())->updateResourcesLR(sp.getResourcesRaster(), sp.getCrono());	
+	//option1
+	//((GujaratWorld*)_simAgent->getWorld())->updateResourcesLR(sp.getResourcesRaster(), sp.getCrono());	
+	//option2
+	GujaratWorld *gw = ((GujaratWorld*)_simAgent->getWorld());
+	float inc = gw->getBiomassVariationInterDune(sp.getCrono());
+	sp.getResourcesRaster().setDelta(s.getResourcesRaster().getDelta() + inc);	
+	//sp.getResourcesRaster().setInterduneCounterRaster(gw->getRaster(LRCounterSoilINTERDUNE));
 	
 	/*
 	std::cout << "NET: edge "		

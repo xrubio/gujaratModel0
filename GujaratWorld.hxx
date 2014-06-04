@@ -109,6 +109,7 @@ class GujaratWorld : public Engine::World
 	
 	float getBiomassVariationLR( bool wetSeason, Soils cellSoil, const Engine::Point2D<int> & index, long numInterDune ) const;
 	
+	
 public:
 	GujaratWorld( Engine::Simulation & simulation, const GujaratConfig & config );
 	virtual ~GujaratWorld();
@@ -174,7 +175,7 @@ public:
 
 	void updateResourcesLR(Engine::Raster & resRast, int timeStep);
 	
-	
+	float getBiomassVariationInterDune( long timeStep ) const;
 //*****************************************************************
 //*****************************************************************
 //*****************************************************************

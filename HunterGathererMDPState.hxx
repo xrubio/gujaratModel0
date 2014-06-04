@@ -4,7 +4,7 @@
 #include <Logger.hxx>
 
 #include <Point2D.hxx>
-#include <IncrementalRaster.hxx>
+#include <MDPRaster.hxx>
 #include <HashTable.hxx>
 #include <MDPAction.hxx>
 #include <engine/problem.h>
@@ -91,6 +91,7 @@ public:
 			, const Engine::Point2D<int> loc
 			, int initialOnHand
 			, Engine::Raster& resourcesRaster
+			, Engine::Raster& interDuneCounterRaster
 			, int maxResources
 			, int divider
 			, std::vector< Sector* > * HRActionSectors
@@ -120,10 +121,9 @@ public:
 	
 	bool equalActions(MDPAction *a, MDPAction *b) const;
 
-	bool EqListMatching(const std::vector<Gujarat::MDPAction*> &v, const std::vector<Gujarat::MDPAction*> &w) const;	
+	bool EqListMatching(const std::vector<Gujarat::MDPAction*> &v, const std::vector<Gujarat::MDPAction*> &w) const;		
 	
-	bool equalIncRastersWithReduct(const Engine::IncrementalRaster  & other)const;
-
+	bool equalIncRastersWithReduct(const MDPRaster  & other)const;
 	
 	static int reductionResourcesToCategory(long r)
 	{
@@ -132,7 +132,7 @@ public:
 			r/2000 specifies aprox needs per HG per day
 		 */		
 		
-		
+		//TODO use constants and params from config.xml -> GujaratConfig
 		r = r/2000;
 		if (r < 2) return 0;
 		if (r < 9) return 1;
@@ -209,9 +209,11 @@ public:
 		
 	}
 	const Engine::Point2D<int>& getLocation() const { return _mapLocation; }
-	Engine::IncrementalRaster& getResourcesRaster() { return _resources; }
-	const Engine::IncrementalRaster& getResourcesRaster() const { return _resources; }
-
+	
+	MDPRaster& getResourcesRaster() { return _resources; }
+	
+	const MDPRaster& getResourcesRaster() const { return _resources; }
+	
 	MDPAction* availableActions( Problem::action_t actIndex ) 
 		{ return _availableActions.at(actIndex); }
 	const MDPAction* availableActions( Problem::action_t actIndex ) const 
@@ -255,7 +257,7 @@ private:
 	Engine::Point2D<int>	_mapLocation;
 	int			_onHandResources;
 	
-	Engine::IncrementalRaster	_resources;
+	MDPRaster&		_resources;	
 	Engine::HashKey		_hashKey;
 	std::vector<MDPAction*> _availableActions;
 	int			_maxResources;
