@@ -257,7 +257,7 @@ private:
 	Engine::Point2D<int>	_mapLocation;
 	int			_onHandResources;
 	
-	MDPRaster&		_resources;	
+	MDPRaster		_resources;	
 	Engine::HashKey		_hashKey;
 	std::vector<MDPAction*> _availableActions;
 	int			_maxResources;

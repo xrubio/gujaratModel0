@@ -24,7 +24,7 @@ HunterGathererMDPState::HunterGathererMDPState( const HunterGathererMDPState& s 
 : _timeIndex( s._timeIndex )
 , _mapLocation( s._mapLocation )
 , _onHandResources( s._onHandResources )
-, _resources( s._resources, s._resources.getInterDuneCounterRaster()  )
+, _resources( s._resources )
 , _hashKey( s._hashKey )
 , _maxResources( s._maxResources)
 , _resourcesDivider( s._resourcesDivider )
@@ -103,7 +103,7 @@ HunterGathererMDPState::HunterGathererMDPState( const HunterGathererMDPState& s
 : _timeIndex( s._timeIndex )
 , _mapLocation( loc )
 , _onHandResources( s._onHandResources )
-, _resources( s._resources, s._resources.getInterDuneCounterRaster() )
+, _resources( s._resources )
 , _hashKey( s._hashKey )
 , _maxResources( s._maxResources)
 , _resourcesDivider( s._resourcesDivider )
@@ -268,7 +268,9 @@ const HunterGathererMDPState& HunterGathererMDPState::operator=( const HunterGat
 	_crono 		= s._crono;
 	_mapLocation 	 = s._mapLocation;
 	_onHandResources = s._onHandResources;
-	_resources 	= MDPRaster(s._resources,s._resources.getInterDuneCounterRaster());	
+	//_resources 	= MDPRaster(s._resources,s._resources.getInterDuneCounterRaster());
+	//_resources(s._resources);
+	_resources = s._resources;		
 	_hashKey 	= s._hashKey;
 	_maxResources 	 = s._maxResources;
 	_resourcesDivider = s._resourcesDivider;
