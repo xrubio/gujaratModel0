@@ -53,6 +53,8 @@ MDPRaster::~MDPRaster()
 
 const int &MDPRaster::getValue( Engine::Point2D<int> pos ) const
 {	
+	return IncrementalRaster::getValue(pos);
+	/*
 	int val = IncrementalRaster::getValue(pos);
 	long intDun = _interDuneCounter->getValue(pos);
 	int result = val  + (_delta * intDun);
@@ -63,6 +65,7 @@ const int &MDPRaster::getValue( Engine::Point2D<int> pos ) const
 	}
 	
 	return result;
+	*/
 }
 
 void MDPRaster::setValue( Engine::Point2D<int> pos, int value )

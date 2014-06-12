@@ -48,7 +48,10 @@ public :
 	virtual ~MDPRaster();		
 	
 	float getDelta() const { return _delta; } 
-	void setDelta( float d) { _delta = d; }	
+	void setDelta( float d) { _delta = 0;
+		//= d; 
+		
+	}	
 	
 	const int &getValue( Engine::Point2D<int> pos ) const;		
 	void setValue( Engine::Point2D<int> pos, int value );
