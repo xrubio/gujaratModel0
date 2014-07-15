@@ -43,7 +43,7 @@ MDPRaster::MDPRaster( const MDPRaster& MRaster)
 , _interDuneCounter(MRaster.getInterDuneCounterRaster())
 // should call MDPRaster(*baseRaster.getBaseRaster(), *baseRaster.getInterDuneCounterRaster())
 {
-	_delta = 0;
+	_delta = MRaster._delta;
 }
 
 MDPRaster::~MDPRaster()
@@ -51,21 +51,18 @@ MDPRaster::~MDPRaster()
 }
 
 
-const int &MDPRaster::getValue( Engine::Point2D<int> pos ) const
+int MDPRaster::getValue( Engine::Point2D<int> pos ) const
 {	
-	return IncrementalRaster::getValue(pos);
-	/*
 	int val = IncrementalRaster::getValue(pos);
 	long intDun = _interDuneCounter->getValue(pos);
 	int result = val  + (_delta * intDun);
 	
 	if(result<0)
 	{
-		result = 0;
+		return 0;
 	}
 	
 	return result;
-	*/
 }
 
 void MDPRaster::setValue( Engine::Point2D<int> pos, int value )
@@ -97,4 +94,24 @@ bool	MDPRaster::operator==( const MDPRaster& other ) const
 }
 */	
 	
+void MDPRaster::txtDump(std::ostream & port)
+{
+	
+	//int size = Raster::_values.size();
+	int size = 1600/25;
+	port << "# type: matrix" << std::endl;
+	port << "# rows: " << size << std::endl;
+	port << "# columns:" << size << std::endl;
+	
+	for(int i=0; i< size; i++)
+	{
+		for(int j=0; j< size; j++)
+		{
+			Engine::Point2D<int> pos(i,j);
+			port << getValue(pos) << "\t";
+		}
+		port << std::endl;
+	}
+}
+
 }

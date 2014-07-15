@@ -945,10 +945,14 @@ void	ForageAction::doTrendVicinityWalkForRewardEstimation( GujaratAgent& agent, 
 
 		// 4. update cell resources & amount collected
 		int prevValue = r.getValue(n - agent.getWorld()->getOverlapBoundaries()._origin); 
+		//*? TODO
 		r.setValue( n - agent.getWorld()->getOverlapBoundaries()._origin, prevValue - amtCollected );
 
 		//w++;
 	}
+	
+	//std::cout << "res " << collected << " loops " << loops << " wd " << walkedDist << " dH " << distHome << " mD " << maxDist << " foraging dist: " << agent.getTimeSpentForagingTile() << " fm " << agent.getPopulationSize() << std::endl;
+	//std::cout << "LOOP " << collected << "," << loops << "," << walkedDist << "," << distHome << "," << maxDist << std::endl;
 	
 	// update l'LRraster??? and LRsectors???
 	// One action per timestep -> Next time I need LRraster and LRsectors they will be updated by
@@ -1032,7 +1036,9 @@ void	ForageAction::doTrendVicinityWalk( GujaratAgent& agent, const Engine::Point
 		collected += amtCollected;
 
 		// 4. update cell resources & amount collected
-		int prevValue = r.getValue(n - agent.getWorld()->getOverlapBoundaries()._origin); 
+		int prevValue = r.getValue(n - agent.getWorld()->getOverlapBoundaries()._origin); 	
+		
+		//*? uncomment it
 		r.setValue( n - agent.getWorld()->getOverlapBoundaries()._origin, prevValue - amtCollected );
 
 		//w++;
@@ -1285,7 +1291,10 @@ void	ForageAction::doWalk( const GujaratAgent& agent, const Engine::Point2D<int>
 		collected += amtCollected;
 		//((GujaratWorld*)agent.getWorld())->setValueLR(eLRForageActivity, n, prevActivity + numInterDune - nonVisited);
 		// 4. update cell resources & amount collected
+
+		//* uncomment it
 		((GujaratWorld*)agent.getWorld())->setValueLR(r,n,cellResources);
+
 		bestScore = 0;
 		selectBestNearestLRCell( 	agent
 					, n

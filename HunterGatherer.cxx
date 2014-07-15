@@ -130,7 +130,6 @@ void	HunterGatherer::updateKnowledge( const Engine::Point2D<int>& agentPos
 	{
 		_world->setValue(eCounterHRSectors,agentPos,HRSectors->size());
 		//log_INFO(logName.str(),"after HGMind::UPDATE; INIT HRSectors at " << agentPos << ", amount sectors " << HRSectors->size());	
-	
 	}
 	else
 	{
@@ -149,7 +148,9 @@ void	HunterGatherer::updateKnowledge( const Engine::Point2D<int>& agentPos
 	}
 	
 	if(_world->getValue(eCounterLRSectors,agentPos)==-1) 
+	{
 		_world->setValue(eCounterLRSectors,agentPos,LRSectors->size());
+	}
 	else
 	{
 		if(_world->getValue(eCounterLRSectors,agentPos)!=LRSectors->size()) 

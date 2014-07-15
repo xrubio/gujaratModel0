@@ -29,7 +29,7 @@ MoveHomeAction::MoveHomeAction( const Engine::Point2D<int>& p, const Engine::Poi
 	assert(LRSectorToForage->cells().size() > 0);
 	
 	_forageAction = new ForageAction(HRSectorToForage, LRSectorToForage, false);
-	_forageAction->setFullPopulation(false);
+	_forageAction->setFullPopulation(true);
 }
 
 MoveHomeAction::MoveHomeAction( const Engine::Point2D<int>& p, const Engine::Point2D<int>& pLR, ForageAction * forageAction ) 

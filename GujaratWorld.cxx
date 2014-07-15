@@ -229,6 +229,14 @@ std::cout << "init LR interdune" << std::endl;
 	getStaticRaster(LRCounterSoilINTERDUNE).setDefaultInitValues(0, _config._lowResolution*_config._lowResolution, 0);
 	fillLowResCounterRaster(LRCounterSoilINTERDUNE,eSoils,INTERDUNE);
 	
+	//*?
+	/*
+	std::cout << "# name: countIDRaster" << std::endl;
+	getStaticRaster(LRCounterSoilINTERDUNE).txtDump(std::cout);
+	std::cout << "# *************************" << std::endl;	
+	*/
+	
+	
 std::cout << "init LR water" << std::endl;		
 	
 
@@ -344,7 +352,7 @@ void GujaratWorld::fillLowResCounterRaster(enum Rasters idRasterCounter, enum Ra
 	}
 }
 
-void GujaratWorld::LowResRasterCountsHighResRaster(enum Rasters idRasterCounter, enum Rasters idRasterSource)
+void GujaratWorld::LowResRasterCountsHighResRaster(enum Rasters idRasterCounter, enum Rasters idRasterSource, Soils soilFilter)
 {
 	Engine::Point2D<int> index;
 	
@@ -355,11 +363,14 @@ void GujaratWorld::LowResRasterCountsHighResRaster(enum Rasters idRasterCounter,
 			Engine::Point2D<int> mapCell; 
 			worldCell2LowResCell(index, mapCell);
 			int count = getValueLR(idRasterCounter,mapCell);
-			int val   = getValue(idRasterSource,index);			
-			//*?
-			//setValueLR(idRasterCounter,mapCell,count+val);
-			setInitValueLR(idRasterCounter,mapCell,count+val);
-			//getDynamicRaster(idRasterCounter).setValue(mapCell,count+val);
+			int val   = getValue(idRasterSource,index);
+			if (soilFilter > -1 && soilFilter == getValue(eSoils,index))
+			{
+				//*?
+				//setValueLR(idRasterCounter,mapCell,count+val);
+				setInitValueLR(idRasterCounter,mapCell,count+val);
+				//getDynamicRaster(idRasterCounter).setValue(mapCell,count+val);
+			}
 		}
 	}
 }
@@ -679,6 +690,8 @@ void GujaratWorld::updateResourcesLR(Engine::Raster & resRast, int timeStep)
 		}
 	}
 	
+	
+	
 }
 
 
@@ -686,9 +699,7 @@ void GujaratWorld::updateResources()
 {
 	std::stringstream logName;
 	logName << "updateResources_" << _simulation.getId();
-	log_DEBUG(logName.str(), getWallTime() << " initiating");
-
-	//unsigned long sumRes = 0;
+	log_DEBUG(logName.str(), getWallTime() << " initiating");	
 	
 	Seasons season = _climate.getSeason();
 	bool wetSeason = false;
@@ -705,14 +716,22 @@ void GujaratWorld::updateResources()
 			// 3. Increment or Decrement cell biomass depending on yearly biomass
 			//    figures and current timestep
 			int currentValue = getValue(eResources, index);
-			float currentFraction = (float)getValue(eResourcesFraction, index)/100.0f;
+			//*? TODO recover decimal part
+			float currentFraction = 0.0f;//(float)getValue(eResourcesFraction, index)/100.0f;
 			Soils cellSoil = (Soils)getValue(eSoils, index);
 			//log_DEBUG(logName.str(), getWallTime() << " index: " << index << " current: " << currentValue << " fraction: " << currentFraction << " cell soil: " << cellSoil);
 			if(cellSoil!=WATER)
 			{
-				float newValue = std::max(0.0f, currentValue+currentFraction+getBiomassVariation(wetSeason, cellSoil, index));
-				currentValue = newValue;
-				float fraction = 100.0f*(newValue  - currentValue);
+				//*? TODO recover decimal part
+				int variation = (int)getBiomassVariation(wetSeason, cellSoil, index);
+				float newValue = std::max(0.0f, currentValue+currentFraction+(float)variation);
+				
+				//std::cout << "DBG:REAL> at crono " << getCurrentTimeStep() << ", inc " << getBiomassVariation(wetSeason, cellSoil, index) << std::endl;
+				
+				//*? TODO recover decimal part
+				currentValue = (float)((int)newValue);
+				//*? TODO recover decimal part			
+				float fraction = 0.0;//100.0f*(newValue  - currentValue);
 				//log_DEBUG(logName.str(), getWallTime() << " newValue: " << currentValue << " fraction: " << fraction);
 				
 				setValue(eResources, index, currentValue);
@@ -722,7 +741,7 @@ void GujaratWorld::updateResources()
 			}
 		}
 	}
-	log_DEBUG(logName.str(), getWallTime() << " end of updateResources");
+	log_DEBUG(logName.str(), getWallTime() << " end of updateResources");	
 	
 	//std::cout << "sumres: " << sumRes << std::endl;
 }
@@ -811,11 +830,17 @@ void GujaratWorld::updateResourcesLowResMap()
 {
 	fillLRRaster(eLRResources,0);
 	// eResources --> eLRResources
-	LowResRasterCountsHighResRaster(eLRResources, eResources);
-	// eLRResources --> paintLRResources
-	//fillHRRasterWithLRRaster(eLRResources, paintLRResources);
+	LowResRasterCountsHighResRaster(eLRResources, eResources, INTERDUNE);
 	// Dont you add the Fraction Raster of resources?? 
 	// LR rasters are used in decision-making, maybe such precission is unneeded.
+	
+	//*?
+	/*
+	std::cout << "# name: WorldLR" << "_crono" << getCurrentTimeStep() << std::endl;
+	getDynamicRaster(eLRResources).txtDump(std::cout);
+	std::cout << "# *************************" << std::endl;
+	*/
+	
 }
 
 
@@ -898,7 +923,9 @@ float GujaratWorld::getBiomassVariationLR( bool wetSeason, Soils cellSoil, const
 		throw Engine::Exception(oss.str());
 	}
 	
-	return variation*numInterDune;
+	return (float)(numInterDune*(int)variation); //*? TODO float again
+	
+	//return variation*numInterDune;
 }
 
 float GujaratWorld::getBiomassVariationInterDune( long timeStep ) const
@@ -911,7 +938,7 @@ float GujaratWorld::getBiomassVariationInterDune( long timeStep ) const
 	}			
 	
 	double variation = 0.0f;
-	if(_config._biomassDistribution.compare("standard")==0)
+//	if(_config._biomassDistribution.compare("standard")==0)
 	{
 		if(wetSeason)
 		{
@@ -923,7 +950,7 @@ float GujaratWorld::getBiomassVariationInterDune( long timeStep ) const
 		}
 	}	
 	
-	return variation;
+	return (float)((int)variation); //*? TODO float again
 	
 }
 
@@ -967,9 +994,7 @@ float GujaratWorld::getBiomassVariation( bool wetSeason, Soils & cellSoil, const
 
 	}
 	
-	//std::cout << "variation: " << variation << std::endl;
-	
-	return variation;
+	return (float)((int)variation); //*? TODO float again
 }
 
 

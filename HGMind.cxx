@@ -342,15 +342,9 @@ void HGMind::updateKnowledge( const Engine::Point2D<int>& agentPos
 		(*LRSectors)[k]->updateFeaturesLR(dataRaster);
 	} 
 	
-	
 	//log_INFO(_logName.str(),"CREATE_LR_DBG("<< (unsigned long)this <<"): " << agentPos << " after update features LRSectors " << LRSectors->size() );
-	
-	
 	//log_INFO(_logName.str(),"CREATE_HR_DBG("<< (unsigned long)this <<"): " << agentPos << " after update features HRSectors " << HRSectors->size() );
-	
-	
 	//log_INFO(_logName.str(),"HGMind::updateKnowledge ends: " << agentPos << ", amount sectors " << LRSectors->size());	
-	
 	
 }
 

@@ -135,7 +135,7 @@ public:
 	void fillRaster(enum Rasters iRaster, int val);
 	
 	void fillLowResCounterRaster(enum Rasters idRasterCounter, enum Rasters idRasterSource,int soiltype);
-	void LowResRasterCountsHighResRaster(enum Rasters idRasterCounter, enum Rasters idRasterSource);
+	void LowResRasterCountsHighResRaster(enum Rasters idRasterCounter, enum Rasters idRasterSource, Soils soilFilter);
 	void fillLowResMeanRaster(enum Rasters idRasterCounter, enum Rasters idRasterSource);
 	
 	//! returns the value of raster r in global position "position"

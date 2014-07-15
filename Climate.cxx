@@ -86,7 +86,7 @@ const Seasons & Climate::getSeason() const
 
 Seasons Climate::getSeason(int timeStep) const
 {
-	return (Seasons)((_theWorld.getCurrentStep() / _config._daysPerSeason) % 3);	
+	return (Seasons)((timeStep / _config._daysPerSeason) % 3);	
 }
 
 

@@ -85,6 +85,13 @@ void	HunterGathererMDPModel::reset( GujaratAgent & agent )
 
 	std::vector<MDPAction *>  actionList;	
 
+	//*?
+	/*std::cout << "# name: InputRaster_crono" << _simAgent->getWorld()->getCurrentTimeStep() << std::endl;
+	_simAgent->getLRResourcesRaster().txtDump(std::cout);
+	std::cout << "# *************************" << std::endl;	
+	*/
+	GujaratWorld * gw = (GujaratWorld*)_simAgent->getWorld();
+	
 	makeActionsForState(_simAgent->getLRResourcesRaster()      
 				, _simAgent->getPosition()
 				, HRActionSectors
@@ -111,8 +118,17 @@ void	HunterGathererMDPModel::reset( GujaratAgent & agent )
 						, actionList);
 	
 	_initial->setCrono(_simAgent->getWorld()->getCurrentTimeStep());
-	_initial->computeHash();
 	
+	_initial->getResourcesRaster().setDelta(0.0);	
+	
+	//*?
+	/*
+	std::cout << "# name: MDProot" << _initial->_dni <<"_crono" << _simAgent->getWorld()->getCurrentTimeStep() << std::endl;
+	_initial->getResourcesRaster().txtDump(std::cout);
+	std::cout << "# *************************" << std::endl;	
+	*/
+	
+	_initial->computeHash();
 	
 	//*?
 	_initial->_creator = -_initial->_creator;
@@ -275,7 +291,8 @@ void HunterGathererMDPModel::next( 	const HunterGathererMDPState &s,
 	//((GujaratWorld*)_simAgent->getWorld())->updateResourcesLR(sp.getResourcesRaster(), sp.getCrono());	
 	//option2
 	GujaratWorld *gw = ((GujaratWorld*)_simAgent->getWorld());
-	float inc = gw->getBiomassVariationInterDune(sp.getCrono());
+	float inc = gw->getBiomassVariationInterDune(sp.getCrono()%360); //TODO should use config->_daysPerYear	
+	float deltaPrev = s.getResourcesRaster().getDelta();	
 	sp.getResourcesRaster().setDelta(s.getResourcesRaster().getDelta() + inc);	
 	//sp.getResourcesRaster().setInterduneCounterRaster(gw->getRaster(LRCounterSoilINTERDUNE));
 	
@@ -288,6 +305,18 @@ void HunterGathererMDPModel::next( 	const HunterGathererMDPState &s,
 		<< std::endl;
 	*/
 	//assert(LRActionSectors->size() > 0);
+	
+	//*?
+	/*
+	std::cout << "# name: MDP" << sp._dni 
+			<< "_crono" << sp.getCrono() 
+			<< "_r" << _initial->_dni
+			<< "_delta" << deltaPrev << "_" << inc << "_" << deltaPrev+inc
+			<< "_p" << s._dni
+			<< std::endl;
+	sp.getResourcesRaster().txtDump(std::cout);
+	std::cout << "# *************************" << std::endl;
+	*/
 	
 	act->executeMDP( agentRef(), s, sp );
 	applyFrameEffects( s, sp );

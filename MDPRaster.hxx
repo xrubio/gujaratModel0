@@ -28,6 +28,8 @@
 #include <IncrementalRaster.hxx>
 #include <Point2D.hxx>
 
+#include <ostream>
+
 namespace Gujarat
 {
 	
@@ -47,13 +49,11 @@ public :
 	
 	virtual ~MDPRaster();		
 	
-	float getDelta() const { return _delta; } 
-	void setDelta( float d) { _delta = 0;
-		//= d; 
-		
-	}	
+	float getDelta() const { return _delta; } 	
+	void setDelta(float d) { _delta = d; }
+	//void setDelta( float d) { _delta = 1.12f*d; }	
 	
-	const int &getValue( Engine::Point2D<int> pos ) const;		
+	int getValue( Engine::Point2D<int> pos ) const;		
 	void setValue( Engine::Point2D<int> pos, int value );
 /*	
 	bool operator==( const MDPRaster& other ) const;
@@ -68,6 +68,9 @@ public :
 		return _changes.size() < other._changes.size();
 	}
 */
+
+	void txtDump(std::ostream & port);
+
 	const Engine::Raster * getInterDuneCounterRaster() const { return _interDuneCounter; }
 	const Engine::Raster * getBaseRaster() const { return _baseRaster; }
 };
